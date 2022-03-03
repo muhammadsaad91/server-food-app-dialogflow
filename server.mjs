@@ -22,7 +22,7 @@ const sessionClient = new dialogflow.SessionsClient();
 
 
 app.post("/talktochatbot", async (req, res) => {
-    const projectId = "firstcarbot-glii"
+    const projectId = "food-app-rocv"
     const sessionId = "session123"
     const query = req.body.text
     const languageCode  = "en-US"
