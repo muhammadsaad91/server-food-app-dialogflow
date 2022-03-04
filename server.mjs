@@ -1,51 +1,72 @@
-import express from "express";
+mport express from "express";
 import cors from "cors";
 import dialogflow from '@google-cloud/dialogflow';
-
-const sessionClient = new dialogflow.SessionsClient();
 
 
 const app = express();
 app.use(cors())
 app.use(express.json())
+const PORT = process.env.PORT || 4000;
+// const private_key = process.env.private_key
+// const client_email = "firebase-adminsdk-gpsgd@firstcarbot-glii.iam.gserviceaccount.com"
 
 
-const PORT = process.env.PORT || 7001;
+// const sessionClient = new dialogflow.SessionsClient({
+//     credentials: {
+//         client_email: client_email,
+//         private_key: private_key,
+//     },
+
+// });
+const sessionClient = new dialogflow.SessionsClient();
+
 
 app.post("/talktochatbot", async (req, res) => {
-
-    //const projectId = "profile-fjsp"
-    const projectId = "aunsyedshah-pdsr"
-    const sessionId = "aunsyedshah"
-    const query = req.body.text;
-    const languageCode = "en-US"
+    const projectId = "firstcarbot-glii"
+    const sessionId = "session123"
+    const query = req.body.text
+    const languageCode  = "en-US"
 
     // The path to identify the agent that owns the created intent.
     const sessionPath = sessionClient.projectAgentSessionPath(
         projectId,
         sessionId
-    );
+    )
 
-    // The text query request.
+    // The text query request.  
     const request = {
         session: sessionPath,
         queryInput: {
             text: {
                 text: query,
-                languageCode: languageCode,
+                languageCode: languageCode
             },
         },
-    };
-    const responses = await sessionClient.detectIntent(request);
+    }
 
-    console.log("resp: ", responses[0].queryResult.fulfillmentText);
-    console.log(responses);
+    try
+    {
+        const response = await sessionClient.detectIntent(request);
+        // console.log("Response", response)
+        console.log("Response", response[0].queryResult.fulfillmentText)
+    
+        res.send({
+            text: response[0].queryResult.fulfillmentText
+        })
+    }
+    catch(e)
+    {
+        console.log("Error while detecting Intent ", e)
+    }
+
+})
 
 
-    res.send({
-        text: responses[0].queryResult.fulfillmentText
-    });
 
+
+// Boiler Plate Code
+app.get("/", (req, res) => {
+    res.send("here is your server");
 })
 app.get("/profile", (req, res) => {
     res.send("here is your profile");
